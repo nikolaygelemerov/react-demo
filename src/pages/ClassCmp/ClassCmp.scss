@@ -1,0 +1,16 @@
+.Container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 2rem;
+  padding: 2rem;
+  font-size: $fontLarge;
+
+  .Controls {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 1rem;
+  }
+
+  .List {
+  }
+}
