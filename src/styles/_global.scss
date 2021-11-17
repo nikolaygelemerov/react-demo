@@ -44,6 +44,12 @@
   border-bottom: 0.2rem solid $color8;
 }
 
+:global(label) {
+  color: rgba($color16, 0.8);
+  font-weight: 600;
+  cursor: pointer;
+}
+
 :global(input) {
   display: inline-block;
   width: 100%;
@@ -67,6 +73,7 @@
 :global(button) {
   display: inline-block;
   height: 4rem;
+  margin-top: 1.8rem;
   padding: 0.5rem 1rem;
   color: $colorTxt;
   font-size: 1.8rem;
@@ -86,7 +93,15 @@
 }
 
 :global(ul.Search) {
+  position: relative;
   width: 100%;
+  margin: 1rem 0 2rem;
+  padding: 3rem;
+  overflow: auto;
+  border: 0.1rem solid $color7;
+  border-radius: 0.4rem;
+  box-shadow: $boxShadow_2;
+  transition: max-width 300ms ease-in-out;
 
   :global(li.Search) {
     display: inline-block;
@@ -104,4 +119,20 @@
       background-color: $color3;
     }
   }
+}
+
+:global(span.Width) {
+  position: absolute;
+  top: 0.5rem;
+  left: 50%;
+  color: rgba($color16, 0.8);
+  transform: translateX(-50%);
+}
+
+:global(span.Height) {
+  position: absolute;
+  left: 0;
+  top: 45%;
+  color: rgba($color16, 0.8);
+  transform: rotate(-90deg);
 }

@@ -7,15 +7,16 @@ import styles from './ClassCmp.scss';
 
 class ClassCmp extends PureComponent {
   state = {
+    list: [],
     search: '',
-    list: []
+    submitSearch: ''
   };
 
-  onChange = async (event) => {
+  onSearchChange = async (event) => {
     this.setState({ search: event.target.value });
   };
 
-  onSearch = async () => {
+  onSearchSubmit = async () => {
     try {
       const { search } = this.state;
 
@@ -28,28 +29,31 @@ class ClassCmp extends PureComponent {
         }
       );
 
-      this.setState({ list: response.data?.objects });
+      this.setState({ list: response.data?.objects, submitSearch: search });
     } catch (error) {
       console.error(error);
     }
   };
 
   render() {
-    const { list } = this.state;
-
-    console.log('list: ', list);
+    const { list, search, submitSearch } = this.state;
 
     return (
       <div className={styles.Container}>
         <div className={styles.Controls}>
-          <input onChange={this.onChange} />
-          <button onClick={this.onSearch} type="button">
+          <label htmlFor="package">
+            Package
+            <input id="package" onChange={this.onSearchChange} value={search} />
+          </label>
+          <button onClick={this.onSearchSubmit} type="button">
             Search
           </button>
         </div>
-        <div className={styles.List}>
-          <List list={list} />
-        </div>
+        {list.length ? (
+          <div className={styles.List}>
+            <List list={list} search={submitSearch} />
+          </div>
+        ) : null}
       </div>
     );
   }
