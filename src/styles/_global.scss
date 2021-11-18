@@ -97,7 +97,6 @@
   width: 100%;
   margin: 1rem 0 2rem;
   padding: 3rem;
-  overflow: auto;
   border: 0.1rem solid $color7;
   border-radius: 0.4rem;
   box-shadow: $boxShadow_2;
@@ -116,7 +115,7 @@
     cursor: pointer;
 
     &:hover {
-      background-color: $color3;
+      //  background-color: $color3;
     }
   }
 }
@@ -135,4 +134,77 @@
   top: 45%;
   color: rgba($color16, 0.8);
   transform: rotate(-90deg);
+}
+
+:global(.Glow) {
+  position: relative;
+  background-color: transparent;
+
+  ::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    animation-name: gradient-shadow;
+    animation-timing-function: ease;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    border-radius: 5px;
+  }
+}
+
+@keyframes gradient-shadow {
+  0% {
+    box-shadow: 0 0 5px 3px #86c5a6, 0 0 4px 2px #86c5a6;
+  }
+  20% {
+    box-shadow: 0 0 5px 3px #0ff, 0 0 4px 2px #0ff;
+  }
+  40% {
+    box-shadow: 0 0 5px 3px rgb(0, 217, 255), 0 0 4px 2px rgb(0, 217, 255);
+  }
+  60% {
+    box-shadow: 0 0 5px 3px #01afff, 0 0 4px 2px #01afff;
+  }
+  80% {
+    box-shadow: 0 0 5px 3px rgb(0, 110, 255), 0 0 4px 2px rgb(0, 110, 255);
+  }
+  100% {
+    box-shadow: 0 0 5px 3px #2847af, 0 0 4px 2px #2847af;
+  }
+}
+
+:global(.Container) {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 2rem;
+  padding: 2rem;
+  font-size: $fontLarge;
+
+  :global(.Controls) {
+    display: grid;
+    grid-area: 1 / 1 / 1 / 3;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 0fr);
+    grid-gap: 2rem;
+  }
+
+  :global(.List) {
+    display: grid;
+    grid-area: 1 / 3 / 1 / 6;
+    justify-items: center;
+    align-items: center;
+    max-height: calc(100vh - 8rem);
+    padding: 2rem;
+    overflow-y: auto;
+  }
+}
+
+:global(.Loader) {
+  > * {
+    fill: $color7;
+  }
 }

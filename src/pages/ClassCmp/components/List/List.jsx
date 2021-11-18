@@ -1,4 +1,8 @@
-import { PureComponent } from 'react';
+import { Fragment, PureComponent } from 'react';
+
+import { Icons } from '@components';
+
+const ANIMATION_TIMEOUT = 3000; // ms
 
 class List extends PureComponent {
   constructor(props) {
@@ -7,85 +11,71 @@ class List extends PureComponent {
     const { list, search } = props;
 
     this.state = {
-      search,
-      searchEntries: [{ [search]: list }]
+      ulClasses: ['Search'],
+      searchEntries: [{ name: search, list }]
     };
   }
 
-  deletePackage({ entryName, pkgName }) {
-    const { searchEntries } = this.state;
+  timeoutID = null;
 
-    const newEntries = [...searchEntries];
+  animate() {
+    this.setState({ ulClasses: ['Search', 'Glow'] }, () => {
+      this.timeoutID && clearTimeout(this.timeoutID);
 
-    const newEntry = newEntries
-      .find((entry) => Object.keys(entry)[0] === entryName)
-      .filter((item) => item?.package?.name === pkgName);
-
-    if (newEntry.length) {
-    }
+      this.timeoutID = setTimeout(() => {
+        this.setState({ ulClasses: ['Search'] });
+      }, ANIMATION_TIMEOUT);
+    });
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     let { searchEntries } = prevState;
 
-    if (!searchEntries.find((entry) => nextProps.search in entry)) {
+    if (!searchEntries.find((entry) => entry.name === nextProps.search)) {
       searchEntries = [
-        { [nextProps.search]: nextProps.list },
+        { name: nextProps.search, list: nextProps.list },
         ...searchEntries
       ];
     }
 
     return {
-      search: nextProps.search,
       searchEntries
     };
   }
 
-  // eslint-disable-next-line react/sort-comp
   render() {
-    const { searchEntries } = this.state;
+    const { searchEntries, ulClasses } = this.state;
+    const { isLoading, search } = this.props;
 
-    console.log('searchEntries: ', searchEntries);
-
-    return (
-      <div>
-        {searchEntries.map((entry) => {
-          const entryName = Object.keys(entry)[0];
-
-          return (
-            <>
-              <h3>{entryName}</h3>
-              <ul className="Search">
-                {entry[entryName].map((item) => (
-                  <li
-                    key={item?.package?.name}
-                    className="Search"
-                    onClick={() => {
-                      this.deletePackage({
-                        entryName,
-                        pkgName: item?.package?.name
-                      });
-                    }}
-                  >
-                    {item?.package?.name}
-                  </li>
-                ))}
-              </ul>
-            </>
-          );
-        })}
-      </div>
+    return isLoading ? (
+      <Icons.Loader />
+    ) : (
+      searchEntries.map(({ name, list }) => (
+        <Fragment key={name}>
+          <h3>{name}</h3>
+          <ul className={name === search ? ulClasses.join(' ') : 'Search'}>
+            {list.map((item) => (
+              <li key={item?.package?.name} className="Search">
+                {item?.package?.name}
+              </li>
+            ))}
+          </ul>
+        </Fragment>
+      ))
     );
   }
 
-  getSnapshotBeforeUpdate(prevProps, prevState) {
-    console.log('prevProps: ', prevProps);
-    console.log('prevState: ', prevState);
-
-    return null;
+  componentDidMount() {
+    this.animate();
   }
 
-  componentDidUpdate() {}
+  componentDidUpdate(prevProps) {
+    const { search } = this.props;
+
+    if (prevProps.search !== search) {
+      this.animate();
+    }
+  }
 }
 
 export default List;

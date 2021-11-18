@@ -3,11 +3,10 @@ import axios from 'axios';
 
 import { List } from './components';
 
-import styles from './ClassCmp.scss';
-
 class ClassCmp extends PureComponent {
   state = {
     list: [],
+    requestStatus: { error: null, isLoading: false, success: null },
     search: '',
     submitSearch: ''
   };
@@ -17,6 +16,11 @@ class ClassCmp extends PureComponent {
   };
 
   onSearchSubmit = async () => {
+    await this.setState((prevState) => ({
+      ...prevState,
+      requestStatus: { ...prevState.requestStatus, isLoading: true }
+    }));
+
     try {
       const { search } = this.state;
 
@@ -29,18 +33,35 @@ class ClassCmp extends PureComponent {
         }
       );
 
-      this.setState({ list: response.data?.objects, submitSearch: search });
+      this.setState((prevState) => ({
+        ...prevState,
+        requestStatus: {
+          ...prevState.requestStatus,
+          isLoading: false,
+          success: true
+        },
+        list: response.data?.objects,
+        submitSearch: search
+      }));
     } catch (error) {
-      console.error(error);
+      this.setState((prevState) => ({
+        ...prevState,
+        requestStatus: { ...prevState.requestStatus, isLoading: false, error }
+      }));
     }
   };
 
   render() {
-    const { list, search, submitSearch } = this.state;
+    const {
+      list,
+      requestStatus: { isLoading },
+      search,
+      submitSearch
+    } = this.state;
 
     return (
-      <div className={styles.Container}>
-        <div className={styles.Controls}>
+      <div className="Container">
+        <div className="Controls">
           <label htmlFor="package">
             Package
             <input id="package" onChange={this.onSearchChange} value={search} />
@@ -50,8 +71,8 @@ class ClassCmp extends PureComponent {
           </button>
         </div>
         {list.length ? (
-          <div className={styles.List}>
-            <List list={list} search={submitSearch} />
+          <div className="List">
+            <List isLoading={isLoading} list={list} search={submitSearch} />
           </div>
         ) : null}
       </div>
