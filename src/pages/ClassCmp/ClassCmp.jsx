@@ -1,6 +1,8 @@
 import { PureComponent } from 'react';
 import axios from 'axios';
 
+import { Icons } from '@components';
+
 import { List } from './components';
 
 class ClassCmp extends PureComponent {
@@ -12,15 +14,18 @@ class ClassCmp extends PureComponent {
   };
 
   onSearchChange = async (event) => {
+    // Sets `search` state on every `onChange` event
     this.setState({ search: event.target.value });
   };
 
   onSearchSubmit = async () => {
+    // Sets `isLoading`
     await this.setState((prevState) => ({
       ...prevState,
       requestStatus: { ...prevState.requestStatus, isLoading: true }
     }));
 
+    // Continues after `isLoading` is true
     try {
       const { search } = this.state;
 
@@ -33,6 +38,7 @@ class ClassCmp extends PureComponent {
         }
       );
 
+      // Sets `list`, `submitSearch` and `requestStatus`
       this.setState((prevState) => ({
         ...prevState,
         requestStatus: {
@@ -44,6 +50,7 @@ class ClassCmp extends PureComponent {
         submitSearch: search
       }));
     } catch (error) {
+      // Sets `error` and `isLoading`
       this.setState((prevState) => ({
         ...prevState,
         requestStatus: { ...prevState.requestStatus, isLoading: false, error }
@@ -70,11 +77,16 @@ class ClassCmp extends PureComponent {
             Search
           </button>
         </div>
-        {list.length ? (
-          <div className="List">
+        <div className="List">
+          {/* Mounts only when `list` has length */}
+          {list.length ? (
             <List isLoading={isLoading} list={list} search={submitSearch} />
-          </div>
-        ) : null}
+          ) : isLoading ? (
+            <Icons.Loader />
+          ) : (
+            <h3>No result</h3>
+          )}
+        </div>
       </div>
     );
   }

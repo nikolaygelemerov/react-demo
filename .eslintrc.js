@@ -24,6 +24,7 @@ module.exports = {
   rules: {
     'arrow-body-style': 'off',
     'comma-dangle': 'off',
+    'function-paren-newline': 'off',
     'implicit-arrow-linebreak': 'off',
     'import/prefer-default-export': 'off',
     'import/no-unresolved': 'off',
@@ -33,6 +34,7 @@ module.exports = {
     'linebreak-style': 'off',
     'no-confusing-arrow': 'off',
     'no-console': 'off',
+    'no-empty': 'off',
     'no-nested-ternary': 'off',
     'no-param-reassign': 'off',
     'no-undef': 'error',

@@ -1,20 +1,11 @@
 :global(.Navigation) {
   display: grid;
-  grid-template-columns: repeat(3, 0.1fr);
+  grid-template-columns: repeat(2, 0.1fr);
   grid-gap: 1rem;
   justify-content: center;
   align-items: center;
   background-color: $color16;
-
-  @include boxShadow();
-
-  @media only screen and (max-width: 1680px) {
-    grid-template-columns: repeat(3, 0.2fr);
-  }
-
-  @media only screen and (max-width: 1000px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  box-shadow: $box-shadow_1;
 }
 
 :global(a.NavLink) {
@@ -97,6 +88,8 @@
   width: 100%;
   margin: 1rem 0 2rem;
   padding: 3rem;
+  text-align: left;
+  background-color: rgba($color4, 0.2);
   border: 0.1rem solid $color7;
   border-radius: 0.4rem;
   box-shadow: $boxShadow_2;
@@ -113,10 +106,28 @@
     box-shadow: $boxShadow;
     transition: background-color 300ms linear;
     cursor: pointer;
+  }
+}
 
-    &:hover {
-      //  background-color: $color3;
-    }
+:global(.UlContainer) {
+  padding: 2rem;
+  text-align: center;
+}
+
+:global(button.Package) {
+  display: inline-block;
+  margin: 1rem;
+  padding: 0.5rem 1rem;
+  color: $colorTxt;
+  font-size: 1.8rem;
+  border: 0.1rem solid $color4;
+  border-radius: 0.4rem;
+  box-shadow: $boxShadow;
+  transition: background-color 300ms linear;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $color3;
   }
 }
 
@@ -136,9 +147,9 @@
   transform: rotate(-90deg);
 }
 
-:global(.Glow) {
+:global(ul.Glow) {
   position: relative;
-  background-color: transparent;
+  background-color: rgba($color3, 0.2);
 
   ::before {
     content: "";
@@ -158,22 +169,22 @@
 
 @keyframes gradient-shadow {
   0% {
-    box-shadow: 0 0 5px 3px #86c5a6, 0 0 4px 2px #86c5a6;
+    box-shadow: 0 0 5px 3px #e74040, 0 0 4px 2px #e74040;
   }
   20% {
-    box-shadow: 0 0 5px 3px #0ff, 0 0 4px 2px #0ff;
+    box-shadow: 0 0 5px 3px #b63535, 0 0 4px 2px #b63535;
   }
   40% {
-    box-shadow: 0 0 5px 3px rgb(0, 217, 255), 0 0 4px 2px rgb(0, 217, 255);
+    box-shadow: 0 0 5px 3px #c46059, 0 0 4px 2px #c46059;
   }
   60% {
-    box-shadow: 0 0 5px 3px #01afff, 0 0 4px 2px #01afff;
+    box-shadow: 0 0 5px 3px #e08936, 0 0 4px 2px #e08936;
   }
   80% {
-    box-shadow: 0 0 5px 3px rgb(0, 110, 255), 0 0 4px 2px rgb(0, 110, 255);
+    box-shadow: 0 0 5px 3px #ee9968, 0 0 4px 2px #ee9968;
   }
   100% {
-    box-shadow: 0 0 5px 3px #2847af, 0 0 4px 2px #2847af;
+    box-shadow: 0 0 5px 3px #f87224, 0 0 4px 2px #f87224;
   }
 }
 
@@ -207,4 +218,8 @@
   > * {
     fill: $color7;
   }
+}
+
+:global(h3) {
+  color: rgba($color16, 0.8);
 }

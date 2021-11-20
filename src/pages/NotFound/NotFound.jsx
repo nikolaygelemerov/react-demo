@@ -4,7 +4,7 @@ import styles from './NotFound.scss';
 
 class NotFound extends PureComponent {
   render() {
-    return <div className={styles.Container}>Not Found</div>;
+    return <h1 className={styles.Container}>Not Found</h1>;
   }
 }
 
