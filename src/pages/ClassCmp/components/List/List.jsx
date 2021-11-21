@@ -37,11 +37,9 @@ class List extends PureComponent {
 
   ref = createRef(null);
 
-  mutationObserver = new MutationObserver(
-    () =>
-      // On every mutation rerender
-      this.isMounted && this.setState((prevState) => ({ ...prevState }))
-  );
+  observerCallback = () => this.forceUpdate();
+
+  mutationObserver = new MutationObserver(this.observerCallback);
 
   animate() {
     // Adds `Glow` class
@@ -130,6 +128,7 @@ class List extends PureComponent {
   }
 
   componentWillUnmount() {
+    this.timeoutID && clearTimeout(this.timeoutID);
     this.isMounted = false;
   }
 }

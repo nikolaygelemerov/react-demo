@@ -29,6 +29,8 @@ const blockRender = () => {
 const List = ({ isLoading, list, search }) => {
   const isMounted = useMounted();
 
+  const [_, forceRender] = useState({});
+
   const [searchEntries, setSearchEntries] = useState([
     {
       list,
@@ -48,13 +50,15 @@ const List = ({ isLoading, list, search }) => {
 
   // Start mutation observer:
   useEffect(() => {
-    // const mutationObserver = new MutationObserver(
-    //   () => isMounted.current && setSearchEntries((prevState) => [...prevState])
-    // );
-    // mutationObserver.observe(ref.current, MUTATION_OBSERVER_CONFIG);
-    // return () => {
-    //   mutationObserver.disconnect();
-    // };
+    const mutationObserver = new MutationObserver(
+      () => isMounted.current && forceRender({})
+    );
+
+    mutationObserver.observe(ref.current, MUTATION_OBSERVER_CONFIG);
+
+    return () => {
+      mutationObserver.disconnect();
+    };
   }, [isMounted]);
 
   // Remove animation:
