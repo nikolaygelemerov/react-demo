@@ -42,6 +42,7 @@ module.exports = {
     'no-unused-expressions': 'off',
     'object-curly-newline': 'off',
     'operator-linebreak': 'off',
+    'react/function-component-definition': 'off',
     'react/jsx-curly-newline': 'off',
     'react/jsx-indent': 'off',
     'react/jsx-props-no-spreading': 'off',
@@ -51,6 +52,7 @@ module.exports = {
     'react-hooks/exhaustive-deps': 'warn',
     'react/no-did-update-set-state': 'off',
     'react/no-unused-state': 'off',
-    'react/sort-comp': 'off'
+    'react/sort-comp': 'off',
+    'react/state-in-constructor': 'off'
   }
 };
