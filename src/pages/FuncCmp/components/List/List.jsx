@@ -1,6 +1,15 @@
-import { createRef, Fragment, PureComponent } from 'react';
+import {
+  Fragment,
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react';
 
 import { Icons } from '@components';
+
+import { useMounted } from '../../hooks';
 
 const ANIMATION_TIMEOUT = 3000; // ms
 
@@ -17,121 +26,98 @@ const blockRender = () => {
   while (date + 3000 > Date.now()) {}
 };
 
-class List extends PureComponent {
-  constructor(props) {
-    super(props);
+const List = ({ isLoading, list, search }) => {
+  const isMounted = useMounted();
 
-    const { list, search } = props;
-
-    this.state = {
-      // Default classes for `ul` element
-      ulClasses: ['Search'],
-      // Initial list of search entries
-      searchEntries: [{ name: search, list }]
-    };
-  }
-
-  isMounted = false;
-
-  timeoutID = null;
-
-  ref = createRef(null);
-
-  mutationObserver = new MutationObserver(
-    () =>
-      // On every mutation rerender
-      this.isMounted && this.setState((prevState) => ({ ...prevState }))
-  );
-
-  animate() {
-    // Adds `Glow` class
-    this.isMounted &&
-      this.setState({ ulClasses: ['Search', 'Glow'] }, () => {
-        this.timeoutID && clearTimeout(this.timeoutID);
-
-        // Removes `Glow` class
-        this.timeoutID = setTimeout(() => {
-          this.isMounted && this.setState({ ulClasses: ['Search'] });
-        }, ANIMATION_TIMEOUT);
-      });
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    let { searchEntries } = prevState;
-
-    // Builds a new `searchEntries` state based on `list` prop update
-    if (!searchEntries.find((entry) => entry.name === nextProps.search)) {
-      searchEntries = [
-        { name: nextProps.search, list: nextProps.list },
-        ...searchEntries
-      ];
+  const [searchEntries, setSearchEntries] = useState([
+    {
+      list,
+      name: search
     }
+  ]);
 
-    return {
-      searchEntries
-    };
-  }
+  const [ulClasses, setUlClasses] = useState(['Search']);
 
-  render() {
-    const { searchEntries, ulClasses } = this.state;
-    const { isLoading, search } = this.props;
+  const timeoutID = useRef(null);
 
-    // style object for Container to be transitioned
-    const style = {
-      height: this.ref.current?.offsetHeight ?? 0,
-      overflow: 'hidden',
-      transition: 'height 300ms ease-in-out'
-    };
+  const ref = useRef(null);
 
-    return (
-      <div style={style}>
-        {/* Content div of transitioned Container */}
-        <div ref={this.ref} className="UlContainer">
-          {isLoading ? (
-            <Icons.Loader />
-          ) : (
-            searchEntries.map(({ name, list }) => (
-              <Fragment key={name}>
-                <h3>{name}</h3>
-                <ul
-                  className={name === search ? ulClasses.join(' ') : 'Search'}
-                >
-                  {list.map((item) => (
-                    <li key={item?.package?.name} className="Search">
-                      {item?.package?.name}
-                    </li>
-                  ))}
-                </ul>
-              </Fragment>
-            ))
-          )}
-        </div>
+  const animate = useCallback(() => {
+    setUlClasses(['Search', 'Glow']);
+  }, []);
+
+  // Start mutation observer:
+  useEffect(() => {
+    // const mutationObserver = new MutationObserver(
+    //   () => isMounted.current && setSearchEntries((prevState) => [...prevState])
+    // );
+    // mutationObserver.observe(ref.current, MUTATION_OBSERVER_CONFIG);
+    // return () => {
+    //   mutationObserver.disconnect();
+    // };
+  }, [isMounted]);
+
+  // Remove animation:
+  useEffect(() => {
+    if (ulClasses.includes('Glow')) {
+      timeoutID.current && clearTimeout(timeoutID.current);
+
+      timeoutID.current = setTimeout(() => {
+        isMounted.current && setUlClasses(['Search']);
+      }, ANIMATION_TIMEOUT);
+    }
+  }, [isMounted, ulClasses]);
+
+  // Update entries:
+  useEffect(() => {
+    setSearchEntries((current) => {
+      if (!current.find((entry) => entry.name === search)) {
+        return [
+          {
+            list,
+            name: search
+          },
+          ...current
+        ];
+      }
+      return current;
+    });
+  }, [list, search]);
+
+  // Animate new search entries:
+  useEffect(() => {
+    animate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchEntries]);
+
+  return (
+    <div
+      style={{
+        height: ref.current?.offsetHeight ?? 0,
+        overflow: 'hidden',
+        transition: 'height 300ms ease-in-out'
+      }}
+    >
+      <div ref={ref} className="UlContainer">
+        {isLoading ? (
+          <Icons.Loader />
+        ) : (
+          searchEntries.map(({ name, list: packages }) => (
+            <Fragment key={name}>
+              <h3>{name}</h3>
+              <ul className={name === search ? ulClasses.join(' ') : 'Search'}>
+                {packages.map((item) => (
+                  <li key={item?.package?.name} className="Search">
+                    {item?.package?.name}
+                  </li>
+                ))}
+              </ul>
+            </Fragment>
+          ))
+        )}
       </div>
-    );
-  }
+    </div>
+  );
+};
 
-  componentDidMount() {
-    this.isMounted = true;
-    // Sets `mutationObserver` listener
-    this.mutationObserver.observe(this.ref.current, MUTATION_OBSERVER_CONFIG);
-
-    // `componentDidMount` `componentDidUpdate` are render blocking
-    // just like `useLayoutEffect`
-    // blockRender();
-    this.animate();
-  }
-
-  componentDidUpdate(prevProps) {
-    const { search } = this.props;
-
-    if (prevProps.search !== search) {
-      this.animate();
-    }
-  }
-
-  componentWillUnmount() {
-    this.isMounted = false;
-  }
-}
-
-export default List;
+export default memo(List);

@@ -1,95 +1,80 @@
-import { PureComponent } from 'react';
+import { memo, useCallback, useReducer } from 'react';
 import axios from 'axios';
 
 import { Icons } from '@components';
 
 import { List } from './components';
+import { actionTypes, initialState, reducer } from './reducers';
 
-class ClassCmp extends PureComponent {
-  state = {
-    list: [],
-    requestStatus: { error: null, isLoading: false, success: null },
-    search: '',
-    submitSearch: ''
-  };
+const FuncCmp = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  onSearchChange = async (event) => {
-    // Sets `search` state on every `onChange` event
-    this.setState({ search: event.target.value });
-  };
+  const onChange = useCallback(async (event) => {
+    dispatch({
+      payload: event.target.value,
+      type: actionTypes.SEARCH_SET
+    });
+  }, []);
 
-  onSearchSubmit = async (event) => {
-    event.preventDefault();
+  const onSearchSubmit = useCallback(
+    async (event) => {
+      event.preventDefault();
 
-    // Sets `isLoading`
-    await this.setState((prevState) => ({
-      ...prevState,
-      requestStatus: { ...prevState.requestStatus, isLoading: true }
-    }));
+      dispatch({ type: actionTypes.REQUEST_START });
 
-    // Continues after `isLoading` is true
-    try {
-      const { search } = this.state;
-
-      const response = await axios.get(
-        'https://registry.npmjs.org/-/v1/search',
-        {
-          params: {
-            text: search
+      try {
+        const response = await axios.get(
+          'https://registry.npmjs.org/-/v1/search',
+          {
+            params: {
+              text: state.search
+            }
           }
-        }
-      );
+        );
 
-      // Sets `list`, `submitSearch` and `requestStatus`
-      this.setState((prevState) => ({
-        ...prevState,
-        requestStatus: {
-          ...prevState.requestStatus,
-          isLoading: false,
-          success: true
-        },
-        list: response.data?.objects,
-        submitSearch: search
-      }));
-    } catch (error) {
-      // Sets `error` and `isLoading`
-      this.setState((prevState) => ({
-        ...prevState,
-        requestStatus: { ...prevState.requestStatus, isLoading: false, error }
-      }));
-    }
-  };
+        dispatch({
+          payload: {
+            data: response.data?.objects ?? [],
+            searchSubmit: state.search
+          },
+          type: actionTypes.REQUEST_SUCCESS
+        });
+      } catch (error) {
+        dispatch({
+          payload: error.message,
+          type: actionTypes.REQUEST_ERROR
+        });
+      }
+    },
+    [state.search]
+  );
 
-  render() {
-    const {
-      list,
-      requestStatus: { isLoading },
-      search,
-      submitSearch
-    } = this.state;
-
-    return (
-      <div className="Container">
-        <form className="Controls" onSubmit={this.onSearchSubmit}>
-          <label htmlFor="package">
-            Package
-            <input id="package" onChange={this.onSearchChange} value={search} />
-          </label>
-          <button type="submit">Search</button>
-        </form>
-        <div className="List">
-          {/* Mounts only when `list` has length */}
-          {list.length ? (
-            <List isLoading={isLoading} list={list} search={submitSearch} />
-          ) : isLoading ? (
-            <Icons.Loader />
-          ) : (
-            <h3>No result</h3>
-          )}
-        </div>
+  return (
+    <div className="Container">
+      <form className="Controls" onSubmit={onSearchSubmit}>
+        <label htmlFor="package">
+          Package
+          <input id="package" onChange={onChange} value={state.search} />
+        </label>
+        <button disabled={state.isLoading} type="submit">
+          Search
+        </button>
+      </form>
+      <div className="List">
+        {state.data ? (
+          <List
+            isLoading={state.isLoading}
+            list={state.data}
+            search={state.searchSubmit}
+          />
+        ) : state.isLoading ? (
+          <Icons.Loader />
+        ) : (
+          <h3>No result</h3>
+        )}
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
-export default ClassCmp;
+export default memo(FuncCmp);
