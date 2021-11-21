@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 
 import pages, { NotFound } from '@pages';
+
 import App from '../App';
 
 const Router = () => {
@@ -10,10 +11,10 @@ const Router = () => {
       <ul className="Navigation">
         {pages.map(({ name, route }) => (
           <NavLink
-            key={route}
             className={({ isActive }) =>
               isActive ? 'NavLinkActive' : 'NavLink'
             }
+            key={route}
             to={route}
           >
             {name}
@@ -23,7 +24,7 @@ const Router = () => {
       <App>
         <Routes>
           {pages.map(({ Cmp, route }) => (
-            <Route key={route} path={route} element={<Cmp />} />
+            <Route element={<Cmp />} key={route} path={route} />
           ))}
           <Route path="*" element={<NotFound />} />
         </Routes>

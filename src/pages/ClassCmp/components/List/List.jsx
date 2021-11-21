@@ -31,24 +31,27 @@ class List extends PureComponent {
     };
   }
 
+  isMounted = false;
+
   timeoutID = null;
 
   ref = createRef(null);
 
   observerCallback = () => this.forceUpdate();
 
-  mutationOberver = new MutationObserver(this.observerCallback);
+  mutationObserver = new MutationObserver(this.observerCallback);
 
   animate() {
     // Adds `Glow` class
-    this.setState({ ulClasses: ['Search', 'Glow'] }, () => {
-      this.timeoutID && clearTimeout(this.timeoutID);
+    this.isMounted &&
+      this.setState({ ulClasses: ['Search', 'Glow'] }, () => {
+        this.timeoutID && clearTimeout(this.timeoutID);
 
-      // Removes `Glow` class
-      this.timeoutID = setTimeout(() => {
-        this.setState({ ulClasses: ['Search'] });
-      }, ANIMATION_TIMEOUT);
-    });
+        // Removes `Glow` class
+        this.timeoutID = setTimeout(() => {
+          this.isMounted && this.setState({ ulClasses: ['Search'] });
+        }, ANIMATION_TIMEOUT);
+      });
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -106,8 +109,9 @@ class List extends PureComponent {
   }
 
   componentDidMount() {
-    // Sets `mutationOberver` listener
-    this.mutationOberver.observe(this.ref.current, MUTATION_OBSERVER_CONFIG);
+    this.isMounted = true;
+    // Sets `mutationObserver` listener
+    this.mutationObserver.observe(this.ref.current, MUTATION_OBSERVER_CONFIG);
 
     // `componentDidMount` `componentDidUpdate` are render blocking
     // just like `useLayoutEffect`
@@ -121,6 +125,11 @@ class List extends PureComponent {
     if (prevProps.search !== search) {
       this.animate();
     }
+  }
+
+  componentWillUnmount() {
+    this.timeoutID && clearTimeout(this.timeoutID);
+    this.isMounted = false;
   }
 }
 

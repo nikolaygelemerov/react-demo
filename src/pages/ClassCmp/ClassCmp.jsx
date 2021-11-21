@@ -18,7 +18,9 @@ class ClassCmp extends PureComponent {
     this.setState({ search: event.target.value });
   };
 
-  onSearchSubmit = async () => {
+  onSearchSubmit = async (event) => {
+    event.preventDefault();
+
     // Sets `isLoading`
     await this.setState((prevState) => ({
       ...prevState,
@@ -68,15 +70,13 @@ class ClassCmp extends PureComponent {
 
     return (
       <div className="Container">
-        <div className="Controls">
+        <form className="Controls" onSubmit={this.onSearchSubmit}>
           <label htmlFor="package">
             Package
             <input id="package" onChange={this.onSearchChange} value={search} />
           </label>
-          <button onClick={this.onSearchSubmit} type="button">
-            Search
-          </button>
-        </div>
+          <button type="submit">Search</button>
+        </form>
         <div className="List">
           {/* Mounts only when `list` has length */}
           {list.length ? (
