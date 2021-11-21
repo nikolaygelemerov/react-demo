@@ -35,10 +35,9 @@ class List extends PureComponent {
 
   ref = createRef(null);
 
-  mutationOberver = new MutationObserver(() =>
-    // On every mutation rerender
-    this.setState((prevState) => ({ ...prevState }))
-  );
+  observerCallback = () => this.forceUpdate();
+
+  mutationOberver = new MutationObserver(this.observerCallback);
 
   animate() {
     // Adds `Glow` class
