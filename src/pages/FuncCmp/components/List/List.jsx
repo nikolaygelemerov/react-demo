@@ -1,12 +1,4 @@
-import {
-  Fragment,
-  memo,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState
-} from 'react';
+import { Fragment, memo, useCallback, useRef, useState } from 'react';
 
 import { Icons } from '@components';
 
@@ -26,12 +18,6 @@ const MUTATION_OBSERVER_CONFIG = {
   characterData: true,
   childList: true,
   subtree: true
-};
-
-const blockRender = () => {
-  const date = Date.now();
-
-  while (date + 3000 > Date.now()) {}
 };
 
 const List = ({ isLoading, list, search }) => {
@@ -112,10 +98,6 @@ const List = ({ isLoading, list, search }) => {
   }, [searchEntries]);
 
   useUnmount(logSearchEntries);
-
-  useLayoutEffect(() => {
-    blockRender();
-  }, []);
 
   return (
     <div

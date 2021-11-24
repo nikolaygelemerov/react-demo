@@ -43,15 +43,7 @@ class List extends PureComponent {
 
   animate() {
     // Adds `Glow` class
-    this.isMounted &&
-      this.setState({ ulClasses: ['Search', 'Glow'] }, () => {
-        this.timeoutID && clearTimeout(this.timeoutID);
-
-        // Removes `Glow` class
-        this.timeoutID = setTimeout(() => {
-          this.isMounted && this.setState({ ulClasses: ['Search'] });
-        }, ANIMATION_TIMEOUT);
-      });
+    this.isMounted && this.setState({ ulClasses: ['Search', 'Glow'] });
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -119,11 +111,23 @@ class List extends PureComponent {
     this.animate();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
+    const { ulClasses } = this.state;
     const { search } = this.props;
 
+    // Add animation:
     if (prevProps.search !== search) {
       this.animate();
+    }
+
+    // Remove animation:
+    if (prevState.ulClasses !== ulClasses && ulClasses.includes('Glow')) {
+      this.timeoutID && clearTimeout(this.timeoutID);
+
+      // Removes `Glow` class
+      this.timeoutID = setTimeout(() => {
+        this.isMounted && this.setState({ ulClasses: ['Search'] });
+      }, ANIMATION_TIMEOUT);
     }
   }
 
