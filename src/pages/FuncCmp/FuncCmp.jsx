@@ -61,7 +61,7 @@ const FuncCmp = () => {
         </button>
       </form>
       <div className="List">
-        {state.data ? (
+        {state.data?.length ? (
           <List
             isLoading={state.isLoading}
             list={state.data}

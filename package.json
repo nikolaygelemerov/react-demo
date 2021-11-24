@@ -34,7 +34,7 @@
     "eslint-plugin-jsx-a11y": "6.5.1",
     "eslint-plugin-prettier": "4.0.0",
     "eslint-plugin-react": "7.27.1",
-    "eslint-plugin-react-hooks": "^4.2.1-beta-149b420f6-20211119",
+    "eslint-plugin-react-hooks": "4.2.1-alpha-00ced1e2b-20211102",
     "file-loader": "6.2.0",
     "html-loader": "3.0.1",
     "html-webpack-plugin": "5.5.0",

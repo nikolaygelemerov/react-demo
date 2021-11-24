@@ -3,13 +3,21 @@ import {
   memo,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState
 } from 'react';
 
 import { Icons } from '@components';
 
-import { useMounted } from '../../hooks';
+import {
+  useMount,
+  useMutationObserver,
+  useMounted,
+  useUnmount,
+  useUpdate,
+  useUpdateOnly
+} from '../../hooks';
 
 const ANIMATION_TIMEOUT = 3000; // ms
 
@@ -48,21 +56,22 @@ const List = ({ isLoading, list, search }) => {
     setUlClasses(['Search', 'Glow']);
   }, []);
 
-  // Start mutation observer:
-  useEffect(() => {
-    const mutationObserver = new MutationObserver(
-      () => isMounted.current && forceRender({})
-    );
+  const logSearchEntries = useCallback(() => {
+    console.log('UNMOUNT searchEntries: ', searchEntries);
+  }, [searchEntries]);
 
-    mutationObserver.observe(ref.current, MUTATION_OBSERVER_CONFIG);
+  useMutationObserver({
+    callback: () => isMounted.current && forceRender({}),
+    config: MUTATION_OBSERVER_CONFIG,
+    target: ref
+  });
 
-    return () => {
-      mutationObserver.disconnect();
-    };
-  }, [isMounted]);
+  useMount(() => {
+    console.log('MOUNT searchEntries: ', searchEntries);
+  });
 
   // Remove animation:
-  useEffect(() => {
+  useUpdate(() => {
     if (ulClasses.includes('Glow')) {
       timeoutID.current && clearTimeout(timeoutID.current);
 
@@ -73,7 +82,7 @@ const List = ({ isLoading, list, search }) => {
   }, [isMounted, ulClasses]);
 
   // Update entries:
-  useEffect(() => {
+  useUpdate(async () => {
     setSearchEntries((current) => {
       if (!current.find((entry) => entry.name === search)) {
         return [
@@ -89,10 +98,24 @@ const List = ({ isLoading, list, search }) => {
   }, [list, search]);
 
   // Animate new search entries:
-  useEffect(() => {
+  useUpdate(() => {
     animate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchEntries]);
+
+  useUpdate(() => {
+    console.log('UPDATE searchEntries: ', searchEntries);
+  }, [searchEntries]);
+
+  useUpdateOnly(() => {
+    console.log('UPDATE_ONLY searchEntries: ', searchEntries);
+  }, [searchEntries]);
+
+  useUnmount(logSearchEntries);
+
+  useLayoutEffect(() => {
+    blockRender();
+  }, []);
 
   return (
     <div

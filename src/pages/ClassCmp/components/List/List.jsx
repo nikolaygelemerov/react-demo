@@ -129,6 +129,7 @@ class List extends PureComponent {
 
   componentWillUnmount() {
     this.timeoutID && clearTimeout(this.timeoutID);
+    this.mutationObserver && this.mutationObserver.disconnect();
     this.isMounted = false;
   }
 }
