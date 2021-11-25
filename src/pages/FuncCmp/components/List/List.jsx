@@ -68,7 +68,7 @@ const List = ({ isLoading, list, search }) => {
   }, [isMounted, ulClasses]);
 
   // Update entries:
-  useUpdate(async () => {
+  useUpdate(() => {
     setSearchEntries((current) => {
       if (!current.find((entry) => entry.name === search)) {
         return [

@@ -11,12 +11,6 @@ const MUTATION_OBSERVER_CONFIG = {
   subtree: true
 };
 
-const blockRender = () => {
-  const date = Date.now();
-
-  while (date + 3000 > Date.now()) {}
-};
-
 class List extends PureComponent {
   constructor(props) {
     super(props);
@@ -105,9 +99,7 @@ class List extends PureComponent {
     // Sets `mutationObserver` listener
     this.mutationObserver.observe(this.ref.current, MUTATION_OBSERVER_CONFIG);
 
-    // `componentDidMount` `componentDidUpdate` are render blocking
-    // just like `useLayoutEffect`
-    // blockRender();
+    // Add animation:
     this.animate();
   }
 
